@@ -10,6 +10,16 @@ builder.Services.AddControllers();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("StudentAdminPortalDb");
 builder.Services.AddDbContext<StudentAdminContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddCors( (options) =>
+options.AddPolicy("angularApplication", (builder) =>
+{
+    builder.WithOrigins("http://localhost:4200")
+    .AllowAnyHeader()
+    .WithMethods("GET", "POST", "PUT", "DELETE")
+    .WithExposedHeaders("*");
+})
+);
 //inject dependencies inside the services
 builder.Services.AddScoped<IStudentRepository, SqlStudentRepository>();
 
@@ -31,6 +41,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("angularApplication");
 
 app.UseAuthorization();
 
